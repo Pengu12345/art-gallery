@@ -1,7 +1,8 @@
 import type { MetaFunction } from "@remix-run/node";
-import {ArtworkThumbnail} from "~/Components/ArtworkComponent";
-import {mockArtwork} from "~/resources/data/FakeData";
-import {TitleText} from "~/Components/GeneralComponents";
+import {ArtworkThumbnail, ArtworkThumbnailList} from "~/components/ArtworkComponent";
+import {Button, TitleTextElement} from "~/components/GeneralComponents";
+import {Artwork} from "~/entities/Artwork";
+import {mock_db_artworks} from "~/resources/data/FakeData";
 
 export const meta: MetaFunction = () => {
     return [
@@ -11,12 +12,13 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
+
+    const mockArtworks : Artwork[] = mock_db_artworks;
+
     return (<div>
-            <TitleText title={"Most Recent Artworks: "} />
-            <div className="section-search card thumbnail-list">
-                    <ArtworkThumbnail artwork={mockArtwork}/>
-                    <ArtworkThumbnail artwork={mockArtwork}/>
-                    <ArtworkThumbnail artwork={mockArtwork}/>
-            </div>
+            <TitleTextElement title={"Most Recent Artworks: "} />
+            <ArtworkThumbnailList artworks={mockArtworks} />
+
+            <Button href={"./search"} text={"Search"}/>
     </div>);
 }
