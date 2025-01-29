@@ -4,9 +4,47 @@
 
 html,
 body {
-  @apply bg-white dark:bg-gray-950;
+  @apply bg-white
+  text-black leading-tight;
+}
 
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
+.site-content {
+  @apply p-10 grow
+}
+
+header {
+  .title {
+
+    @apply text-5xl text-center;
+    @apply h-fit p-5;
+    @apply border-b border-b-black;
+
   }
 }
+
+footer {
+  @apply text-gray-500 text-center;
+  @apply h-fit p-5 bottom-0;
+  @apply border-t border-t-black;
+
+  font-style: italic;
+}
+
+.card {
+  @apply rounded-lg border border-gray-500;
+
+}
+
+.thumbnail-list {
+  @apply flex flex-row gap-x-2;
+}
+
+.thumbnail-wrapper {
+  @apply w-fit max-w-52 h-52 border border-gray-500 p-1;
+}
+
+/*
+.debug-rect {
+  @apply outline-1 bg-red-200;
+}
+*/

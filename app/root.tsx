@@ -32,9 +32,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+
+        <header className="debug-rect">
+          <div className="title"> Gallery </div>
+        </header>
+
+        <div className="debug-rect site-content">
+
+          {children}
+
+        </div>
+
         <ScrollRestoration />
         <Scripts />
+
+        <footer>
+          <div> 2025 - Made using React Remix - Author: NoahAmp</div>
+        </footer>
+
       </body>
     </html>
   );
