@@ -26,14 +26,30 @@ export function ArtworkThumbnail({artwork}: ArtworkProps) {
 
 export interface ArtworkListProps {
     artworks: Artwork[];
+    maxItems?: number;
 }
 
-export function ArtworkThumbnailList({artworks}: ArtworkListProps) {
+export function ArtworkThumbnailList({artworks, maxItems}: ArtworkListProps) {
     return(<>
         <div className="section-search thumbnail-list">
             {
-                artworks.map((artwork) => (<>
-                    <ArtworkThumbnail artwork={artwork} />
+                artworks.map((artwork, id) => (<>
+                    {!maxItems && <ArtworkThumbnail artwork={artwork} />}
+                    {maxItems  && id < maxItems && <ArtworkThumbnail artwork={artwork} />}
+                    </>)
+                )
+            }
+        </div>
+    </>)
+}
+
+export function ArtworkThumbnailGrid({artworks, maxItems}: ArtworkListProps) {
+    return(<>
+        <div className="section-search thumbnail-grid">
+            {
+                artworks.map((artwork, id) => (<>
+                    {!maxItems && <ArtworkThumbnail artwork={artwork} />}
+                    {maxItems  && id < maxItems && <ArtworkThumbnail artwork={artwork} />}
                     </>)
                 )
             }

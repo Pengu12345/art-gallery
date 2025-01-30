@@ -1,4 +1,4 @@
-import {mock_db_artworks} from "~/resources/data/FakeData";
+import {mock_db_artworks, mock_db_artworks} from "~/resources/data/FakeData";
 
 // TODO: Implement Database instead of using mock data
 
@@ -7,7 +7,7 @@ export function findArtwork(id: number) {
 }
 
 export function getArtworksByTags(tagList : string[]) {
-    return mock_db_artworks.filter(artwork => artwork.tags.some(tag => tagList.includes(tag)));
+    return mock_db_artworks.filter(artwork => tagList.every(tag => artwork.tags.includes(tag)));
 }
 
 export function getArtworksByArtist(artist : string) {

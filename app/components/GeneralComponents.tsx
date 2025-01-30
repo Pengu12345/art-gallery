@@ -44,6 +44,7 @@ export function RadioGroup({label, name, values, selected}: RadioGroupProps) {
                         type="radio"
                         name={name}
                         value={value}
+                        onChange={() =>{}}
                         checked
                     />
                 }

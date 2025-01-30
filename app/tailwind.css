@@ -42,11 +42,20 @@ footer {
 
 }
 
+.clickable {
+  @apply cursor-pointer;
+}
+
 /* Thumbnail*/
 .thumbnail-list {
   @apply flex flex-row gap-x-2;
   @apply h-fit mb-5;
   overflow-x: scroll;
+}
+
+.thumbnail-grid {
+  @apply flex flex-row flex-wrap gap-x-2 gap-y-2;
+  @apply h-fit mb-5;
 }
 
 .thumbnail-wrapper {
@@ -106,4 +115,17 @@ footer {
 .input-text {
   @apply rounded-lg border border-gray-500;
   @apply w-fit h-fit p-1;
+}
+
+.section-search {
+
+}
+
+.section-search-form {
+  @apply mb-10 p-2;
+  @apply border border-gray-500;
+}
+
+.section-search-results {
+
 }

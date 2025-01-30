@@ -2,9 +2,10 @@ import {ActionFunctionArgs, json} from "@remix-run/node";
 import {useActionData, useLoaderData} from "@remix-run/react";
 import {loader} from "~/routes/art.$id";
 import {Button, InputText, RadioGroup} from "~/components/GeneralComponents";
-import {ArtworkThumbnailList} from "~/components/ArtworkComponent";
+import {ArtworkThumbnailGrid, ArtworkThumbnailList} from "~/components/ArtworkComponent";
 import {Artwork} from "~/entities/Artwork";
 import {getArtworksByArtist, getArtworksBySearch, getArtworksByTags} from "~/dataAction";
+import {mockArtwork} from "~/resources/data/FakeData";
 
 export interface SearchProps {
     search: string;
@@ -28,49 +29,71 @@ export async function action({request}: ActionFunctionArgs) {
 export default function Search() {
 
     const data = useActionData<typeof action>() as SearchProps;
-
     let artworks : Artwork[] = [];
+
+    let page = 0;
+    const artworkPerPage = 8 * 3;
+    let totalPages = 0;
 
     let selectedId = 0;
     if(data) {
-        if(data.type == 'Name') {
-            selectedId = 0;
-            artworks = getArtworksBySearch(data.search);
+        switch (data.type) {
+            case 'Name':
+                selectedId = 0;
+                artworks = getArtworksBySearch(data.search);
+                break;
+            case 'Artist':
+                selectedId = 1;
+                artworks = getArtworksByArtist(data.search);
+                break;
+            case 'Tags': {
+                const tags = data.search.split(' ');
+                artworks = getArtworksByTags(tags);
+                selectedId = 2;
+                break;
+            }
         }
-        if(data.type == 'Artist') {
-            selectedId = 1;
-            artworks = getArtworksByArtist(data.search);
-        }
-        if(data.type == 'Tags') {
-            const tags = data.search.split(' ');
-            artworks = getArtworksByTags(tags);
-            selectedId = 2;
-        }
+
+        page = data.page;
     }
 
+    totalPages = Math.ceil(artworks.length / artworkPerPage);
+    if(totalPages < 1) {totalPages = 1;}
 
     return(<>
         <Button text="Return to gallery" href="/gallery" />
 
         <div className="section-search">
-            <form method="post">
-                <InputText label={"Searching for: "} name="search" value={data? data.search : ''} />
-                <div className="section-search-type">
-                    <RadioGroup
-                        label= "Search by: "
-                        name="type"
-                        values={['Name', 'Artist', 'Tags']}
-                        selected={selectedId}
-                    />
-                </div>
 
-                <button className="button" type="submit" value="Search"> Search </button>
+            <div className="section-search-form">
+                <form method="post">
 
+                    <input type="hidden" name="page" value={page} />
+
+                    <InputText label={"Searching for: "} name="search" value={data? data.search : ''} />
+                    <div className="section-search-type">
+                        <RadioGroup
+                            label= "Search by: "
+                            name="type"
+                            values={['Name', 'Artist', 'Tags']}
+                            selected={selectedId}
+                        />
+                    </div>
+
+                    <button className="button" type="submit" value="Search"> Search </button>
+                    <a className="button" href="/search"> Reset </a>
+
+                    <p>Page: {parseInt(page) + 1 } out of {totalPages}</p>
+
+                </form>
+            </div>
+
+            <div className="section-search-results">
                 {data &&
-                    <ArtworkThumbnailList artworks={artworks} />
+                    <ArtworkThumbnailGrid artworks={artworks} maxItems={artworkPerPage}/>
                 }
-                {data == undefined && <div className="italic"> Please make a search...</div>}
-            </form>
+            </div>
         </div>
     </>)
+
 }

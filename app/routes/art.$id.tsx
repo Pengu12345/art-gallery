@@ -43,7 +43,11 @@ export default function Art() {
                 <span> Tags: </span>
                 <div className="art-tags-container">
                     {artwork.tags.map((tag) => (<>
-                        <div className="tag">{tag}</div>
+                        <form action={"/search"} method="post">
+                            <input type="hidden" name="search" value={tag} />
+                            <input type="hidden" name="type" value="Tags" />
+                            <input type="submit" value={tag} className={"tag clickable"} />
+                        </form>
                     </>))}
                 </div>
             </div>
