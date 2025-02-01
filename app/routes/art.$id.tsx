@@ -36,19 +36,33 @@ export default function Art() {
                     <div className="font-bold text-3xl text-center"> {artwork.name}</div>
                 </div>
 
-                <div className="art-description-container">
-                    <TextElement text={artwork.description} />
-                </div>
+                <div className="flex flex-row">
 
-                <span> Tags: </span>
-                <div className="art-tags-container">
-                    {artwork.tags.map((tag) => (<>
-                        <form action={"/search"} method="post">
-                            <input type="hidden" name="search" value={tag} />
-                            <input type="hidden" name="type" value="Tags" />
-                            <input type="submit" value={tag} className={"tag clickable"} />
-                        </form>
-                    </>))}
+                    <div className="art-description-container flex-grow" >
+                        <TextElement text={artwork.description} />
+                    </div>
+
+                    <div className="w-56">
+
+                        <div>Artist:
+                            <form action={"/search/"} method="post">
+                                <input type="hidden" name="search" value={artwork.artist} />
+                                <input type="hidden" name="type" value="Artist" />
+                                <input type="submit" value={artwork.artist} className={"tag clickable"} />
+                            </form>
+                        </div>
+
+                        <span> Tags: </span>
+                        <div className="art-tags-container">
+                            {artwork.tags.map((tag) => (<>
+                                <form action={"/search/"} method="post">
+                                    <input type="hidden" name="search" value={tag} />
+                                    <input type="hidden" name="type" value="Tags" />
+                                    <input type="submit" value={tag} className={"tag clickable"} />
+                                </form>
+                            </>))}
+                        </div>
+                    </div>
                 </div>
             </div>
         </>)

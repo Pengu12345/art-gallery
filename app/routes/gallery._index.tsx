@@ -19,6 +19,6 @@ export default function Index() {
             <TitleTextElement title={"Most Recent Artworks: "} />
             <ArtworkThumbnailList artworks={mockArtworks} />
 
-            <Button href={"./search"} text={"Search"}/>
+            <Button href={"/search"} text={"Search"}/>
     </div>);
 }

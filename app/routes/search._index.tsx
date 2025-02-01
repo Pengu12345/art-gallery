@@ -1,64 +1,91 @@
-import {ActionFunctionArgs, json} from "@remix-run/node";
+import {ActionFunctionArgs, json, LoaderFunctionArgs} from "@remix-run/node";
 import {useActionData, useLoaderData} from "@remix-run/react";
 import {loader} from "~/routes/art.$id";
 import {Button, InputText, RadioGroup} from "~/components/GeneralComponents";
 import {ArtworkThumbnailGrid, ArtworkThumbnailList} from "~/components/ArtworkComponent";
 import {Artwork} from "~/entities/Artwork";
 import {getArtworksByArtist, getArtworksBySearch, getArtworksByTags} from "~/dataAction";
-import {mockArtwork} from "~/resources/data/FakeData";
+import {mock_db_artworks} from "~/resources/data/FakeData";
+import {useState} from "react";
 
 export interface SearchProps {
-    search: string;
+    searchData: string;
     type: string;
-    page: number;
 }
 
-export async function action({request}: ActionFunctionArgs) {
+export interface SearchLoaderData {
+    search : SearchProps;
+    artworks: Artwork[];
+}
 
+// TODO: Pagination
+
+// Returns artworks depending on what was requested. By default, displayEverything
+export async function action({request}: ActionFunctionArgs) {
     const body = await request.formData();
 
-    const search = {
-        type: body.get('type'),
-        search: body.get('search'),
-        page: body.get('page')
+    const data : SearchProps = {
+        type: body.get('type') as string,
+        searchData: body.get('search') as string
     }
 
-    return json(search)
+    let artworks : Artwork[] = [];
+    // Fill up the artworks
+    switch (data.type) {
+        case 'Name':
+            artworks = getArtworksBySearch(data.searchData);
+            break;
+        case 'Artist':
+            artworks = getArtworksByArtist(data.searchData);
+            break;
+        case 'Tags': {
+            const tags = data.searchData.split(' ');
+            artworks = getArtworksByTags(tags);
+            break;
+        }
+    }
+
+    return {search: data, artworks: artworks};
 }
 
+export const MAX_ITEMS_IN_PAGE = 8*3;
+
 export default function Search() {
-
-    const data = useActionData<typeof action>() as SearchProps;
-    let artworks : Artwork[] = [];
-
-    let page = 0;
-    const artworkPerPage = 8 * 3;
-    let totalPages = 0;
-
-    let selectedId = 0;
-    if(data) {
-        switch (data.type) {
-            case 'Name':
-                selectedId = 0;
-                artworks = getArtworksBySearch(data.search);
-                break;
-            case 'Artist':
-                selectedId = 1;
-                artworks = getArtworksByArtist(data.search);
-                break;
-            case 'Tags': {
-                const tags = data.search.split(' ');
-                artworks = getArtworksByTags(tags);
-                selectedId = 2;
-                break;
-            }
-        }
-
-        page = data.page;
+    // INITIALIZE DATA
+    let data = useActionData<typeof action>() as SearchLoaderData | undefined;
+    // If data is undefined, use default fields
+    if (!data) {data = {
+        search: {type: 'Name', searchData: '',}, artworks: mock_db_artworks};
     }
+    //---
 
-    totalPages = Math.ceil(artworks.length / artworkPerPage);
-    if(totalPages < 1) {totalPages = 1;}
+    const [page, setPage] = useState(0);
+    const [displayedArtworks, setDisplayedArtworks] = useState<Artwork[]>(data.artworks.slice(0, MAX_ITEMS_IN_PAGE));
+    const [searchValue, setSearchValue] = useState(data.search.searchData);
+
+    // Pagination settings
+    const maxPage = Math.floor(data.artworks.length / MAX_ITEMS_IN_PAGE);
+
+    const setPagination = (next_page : number)=>  {
+        if(next_page < 0) next_page = 0;
+        if(next_page > maxPage) next_page = maxPage;
+
+        setPage(next_page);
+
+        // Change displayed artworks depending on the page
+        setDisplayedArtworks(
+            data.artworks.slice(next_page * MAX_ITEMS_IN_PAGE, (next_page * MAX_ITEMS_IN_PAGE) + MAX_ITEMS_IN_PAGE)
+        );
+    }
+    // ----
+    // Type settings
+    let selectedId = 0
+    if (data.search.type === 'Name') selectedId = 0;
+    if (data.search.type === 'Artist') selectedId = 1;
+    if (data.search.type === 'Tags') selectedId = 2;
+    // -----
+
+
 
     return(<>
         <Button text="Return to gallery" href="/gallery" />
@@ -67,10 +94,13 @@ export default function Search() {
 
             <div className="section-search-form">
                 <form method="post">
+                    <InputText
+                        label={"Searching for: "}
+                        name="search"
+                        value={searchValue}
+                        onChange={(e) => setSearchValue(e.target.value)}
+                    />
 
-                    <input type="hidden" name="page" value={page} />
-
-                    <InputText label={"Searching for: "} name="search" value={data? data.search : ''} />
                     <div className="section-search-type">
                         <RadioGroup
                             label= "Search by: "
@@ -83,14 +113,22 @@ export default function Search() {
                     <button className="button" type="submit" value="Search"> Search </button>
                     <a className="button" href="/search"> Reset </a>
 
-                    <p>Page: {parseInt(page) + 1 } out of {totalPages}</p>
-
                 </form>
+
+                <div className="flex flex-row space-x-2 items-center">
+                    <Button text="<<" onClick={() => setPagination(0)} />
+                    <Button text="<" onClick={() => setPagination(page - 1)} />
+                    <p> {page+1} / {maxPage+1}</p>
+                    <Button text=">" onClick={() => setPagination(page + 1)} />
+                    <Button text=">>" onClick={() => setPagination(maxPage)} />
+
+                    <p> Found {data.artworks.length} artworks. </p>
+                </div>
             </div>
 
             <div className="section-search-results">
                 {data &&
-                    <ArtworkThumbnailGrid artworks={artworks} maxItems={artworkPerPage}/>
+                    <ArtworkThumbnailGrid artworks={displayedArtworks} maxItems={MAX_ITEMS_IN_PAGE}/>
                 }
             </div>
         </div>

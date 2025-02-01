@@ -1,4 +1,5 @@
 import {useState} from "react";
+import {Link} from "@remix-run/react";
 
 interface TextElementProps {text: string;}
 export const TextElement = ({ text }: TextElementProps) => {
@@ -14,13 +15,18 @@ export const TitleTextElement = ({ title }: TitleTextPropsElement) => {
     </>)
 }
 
-interface ButtonProps {text: string; href: string;}
-export const Button = ({ text, href }: ButtonProps) => {
+interface ButtonProps {
+    text: string,
+    href?: string,
+    onClick?: () => void,
+    disabled?: boolean,
+}
+export const Button = ({ text, href, onClick, disabled }: ButtonProps) => {
     return(
         <>
-            <div className="button">
-                <a href={href}>{text}</a>
-            </div>
+            <Link to={href?href:''} onClick={onClick} preventScrollReset >
+                <div className="button"> {text} </div>
+            </Link>
         </>
     )
 }
@@ -65,18 +71,18 @@ export function RadioGroup({label, name, values, selected}: RadioGroupProps) {
 interface InputTextProps {
     label: string,
     name: string,
-    value: string
+    value: string,
+    onChange?: (v) => void
 }
-export const InputText = ({label, name, value} : InputTextProps) => {
-    const [inputValue, setInputValue] = useState(value);
-
+export const InputText = ({label, name, value, onChange} : InputTextProps) => {
     return (<div className="input-text-container">
         <div className="label">{label}</div>
         <input
+            type="text"
             className="input-text"
             name={name}
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            value={value}
+            onChange={onChange}
         />
     </div>)
 }
