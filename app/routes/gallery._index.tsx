@@ -6,8 +6,7 @@ import {mock_db_artworks} from "~/resources/data/FakeData";
 
 export const meta: MetaFunction = () => {
     return [
-        { title: "New Remix App" },
-        { name: "description", content: "Welcome to Remix!" },
+        { title: "Gallery Index" },
     ];
 };
 
@@ -17,7 +16,7 @@ export default function Index() {
 
     return (<div>
             <TitleTextElement title={"Most Recent Artworks: "} />
-            <ArtworkThumbnailList artworks={mockArtworks} />
+            <ArtworkThumbnailList artworks={mockArtworks} maxItems={10}/>
 
             <Button href={"/search"} text={"Search"}/>
     </div>);

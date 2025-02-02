@@ -19,14 +19,35 @@ interface ButtonProps {
     text: string,
     href?: string,
     onClick?: () => void,
+}
+export const Button = ({ text, href, onClick }: ButtonProps) => {
+    return(
+        <div className="button">
+            <Link to={href?href:''} onClick={onClick} preventScrollReset >
+                <div> {text} </div>
+            </Link>
+        </div>
+    )
+}
+
+interface FormButtonProps {
+    text: string,
+    name: string,
+    value: string | number,
+    className?:string,
+    onClick?: () => void,
     disabled?: boolean,
 }
-export const Button = ({ text, href, onClick, disabled }: ButtonProps) => {
+export const FormButton = (props : FormButtonProps) => {
     return(
         <>
-            <Link to={href?href:''} onClick={onClick} preventScrollReset >
-                <div className="button"> {text} </div>
-            </Link>
+            <button
+                type="submit"
+                className={props.className}
+                name={props.name}
+                onClick={props.onClick}
+                disabled={props.disabled}
+                value={""+props.value}> {props.text} </button>
         </>
     )
 }

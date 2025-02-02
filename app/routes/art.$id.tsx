@@ -1,8 +1,14 @@
 import {loaders} from "@remix-run/dev/dist/compiler/utils/loaders";
-import { json } from "@remix-run/node";
-import {useLoaderData} from "@remix-run/react";
+import {json, type MetaFunction} from "@remix-run/node";
+import {Link, useLoaderData} from "@remix-run/react";
 import {Button, TextElement} from "~/components/GeneralComponents";
 import {findArtwork} from "~/dataAction";
+
+export const meta: MetaFunction = () => {
+    return [
+        { title: "View artwork" },
+    ];
+};
 
 
 export async function loader({params}:  any) {
@@ -32,38 +38,45 @@ export default function Art() {
                 <div className="art-image-container">
                     <img className="" src={artwork.image} alt={artwork.name} />
                 </div>
-                <div className="mt-2 mb-2">
-                    <div className="font-bold text-3xl text-center"> {artwork.name}</div>
+
+                <div className="art-options-container">
+                    <a className="button" href={artwork.image}> View full </a>
                 </div>
 
-                <div className="flex flex-row">
+                <div className="art-data-container">
+                    <div className="title">{artwork.name}</div>
 
-                    <div className="art-description-container flex-grow" >
-                        <TextElement text={artwork.description} />
-                    </div>
-
-                    <div className="w-56">
-
-                        <div>Artist:
-                            <form action={"/search/"} method="post">
-                                <input type="hidden" name="search" value={artwork.artist} />
-                                <input type="hidden" name="type" value="Artist" />
-                                <input type="submit" value={artwork.artist} className={"tag clickable"} />
-                            </form>
+                    <div className="flex flex-row">
+                        <div className="description flex-grow" >
+                            <TextElement text={artwork.description} />
                         </div>
 
-                        <span> Tags: </span>
-                        <div className="art-tags-container">
-                            {artwork.tags.map((tag) => (<>
-                                <form action={"/search/"} method="post">
-                                    <input type="hidden" name="search" value={tag} />
-                                    <input type="hidden" name="type" value="Tags" />
-                                    <input type="submit" value={tag} className={"tag clickable"} />
+                        <div className="metadata">
+
+                            <div className="flex flex-row gap-x-2">
+                                Artist:
+                                <form action={"/search/"} method="get">
+                                    <input type="hidden" name="search" value={artwork.artist} />
+                                    <input type="hidden" name="type" value="Artist" />
+                                    <input type="submit" value={artwork.artist} className={"tag clickable underline"} />
                                 </form>
-                            </>))}
+                            </div>
+
+                            <span> Tags: </span>
+                            <div className="art-tags-container">
+                                {artwork.tags.map((tag) => (<>
+                                    <form action={"/search/"} method="get">
+                                        <input type="hidden" name="search" value={tag} />
+                                        <input type="hidden" name="type" value="Tags" />
+                                        <input type="submit" value={tag} className={"tag clickable"} />
+                                    </form>
+                                </>))}
+                            </div>
                         </div>
                     </div>
                 </div>
+
+
             </div>
         </>)
 }
